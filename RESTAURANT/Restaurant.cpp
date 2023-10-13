@@ -1,5 +1,7 @@
 #include "main.h"
 
+int MAXSIZE;
+
 class imp_res : public Restaurant
 {
     public:
@@ -19,12 +21,39 @@ class imp_res : public Restaurant
             bool LEXIST(string name){
                 if(this->count == 0) return false;
                 customer* temp =this->head;
-                while(temp->next != head ){
+
+                do{
                     if(temp->name == name) return true;
                     temp = temp->next;
                 }
-                if(temp->name == name) return true;
+                while (temp != this->head && temp);
+
                 return false;
+            };
+
+            void ADD(string name, int energy){
+                if(this->count == 0){
+                        customer* cus = new customer(name, energy, nullptr, nullptr);
+                        this->head = cus;
+                        this->curr = cus;
+                        this->count = 1;
+                    }
+                else if(this->count == 1){
+                        Restaurant::customer* cus = new Restaurant::customer(name, energy, this->head, this->head);
+                        this->curr = cus;
+                        this->curr->next = this->head;
+                        this->curr->prev = this->head;
+                        this->head->next = this->curr;
+                        this->head->prev = this->curr;
+                        this->count = 2;
+                    }
+                else{
+                        Restaurant::customer* cus = new Restaurant::customer(name, energy, this->curr, this->head);
+                        this->head->prev = cus;
+                        this->curr->next = cus;
+                        this->curr = cus;
+                        this->count++;
+                }
             };
 
             void ADD_RED(string name, int energy){
@@ -237,115 +266,103 @@ class imp_res : public Restaurant
             
             }
 
-			// void REVERSAL_TS(){
-			// 	int countTS = 0;
-			// 	customer* temp = this->head;
-			// 	while(temp->next != head){
-			// 		if(temp->energy > 0) countTS++;
-			// 		temp = temp->next;
-			// 	}
-			// 	if(temp->energy > 0) countTS++;
-			// 	if(countTS <= 1) return;
+            int countTS(){
+                int countTS = 0;
+				customer* temp = this->head;
 
-			// 	customer* TSFirst = this->curr;
-			// 	customer* TSLast = this->curr;
-			// 	while(TSFirst->energy < 0) TSFirst = TSFirst->prev;
-			// 	while(TSLast->energy < 0) TSLast = TSLast->next;
+                do{
+                    if(temp->energy > 0 ) countTS++;
+                    temp = temp->next;
+                }
+                while(temp != this->head);
 
-			// 	while(TSFirst != TSLast){
-			// 			string name = TSFirst->name;
-			// 			int energy = TSFirst->energy;
-			// 			TSFirst->name = TSLast->name;
-			// 			TSFirst->energy = TSLast->energy;
-			// 			TSLast->name = name;
-			// 			TSLast->energy = energy;
-            //             TSFirst = TSFirst->prev;
-			// 			while(TSFirst->energy < 0) TSFirst = TSFirst->prev;
-			// 			if(TSFirst == TSLast) break;
-            //             TSLast = TSLast->next;
-			// 			while(TSLast->energy < 0) TSLast = TSLast->next;
-			// 		}
-			// 	cout << "end reversal thuat su, check!"<<endl;
-			// 	this->LPRINT(9);
-			// };
+                cout <<"Enter REVERSAL_TS, countTS: "<<countTS<<endl;
+                return countTS;
+            };
 
-            // void REVERSAL_OL(){
-            //     int countOL = 0;
-			// 	customer* temp = this->head;
-			// 	while(temp->next != head){
-			// 		if(temp->energy < 0) countOL++;
-			// 		temp = temp->next;
-			// 	}
-			// 	if(temp->energy > 0) countOL++;
-			// 	if(countOL <= 1) return;
+            int countOL(){
+                int countOL = 0;
+				customer* temp = this->head;
 
-			// 	customer* OLFirst = this->curr;
-			// 	customer* OLLast = this->curr;
-			// 	while(OLFirst->energy > 0) OLFirst = OLFirst->prev;
-			// 	while(OLLast->energy > 0) OLLast = OLLast->next;
+                do{
+                    if(temp->energy < 0 ) countOL++;
+                    temp = temp->next;
+                }
+                while(temp != this->head);
 
-			// 	while(OLFirst != OLLast){
-			// 			string name = OLFirst->name;
-			// 			int energy = OLFirst->energy;
-			// 			OLFirst->name = OLLast->name;
-			// 			OLFirst->energy = OLLast->energy;
-			// 			OLLast->name = name;
-			// 			OLLast->energy = energy;
-            //             OLFirst = OLFirst->prev;
-			// 			while(OLFirst->energy > 0) OLFirst = OLFirst->prev;
-			// 			if(OLFirst == OLLast) break;
-            //             OLLast = OLLast->next;
-			// 			while(OLLast->energy > 0) OLLast = OLLast->next;
-			// 		}
-			// 	cout << "end reversal thuat su, check!"<<endl;
-			// 	this->LPRINT(9);
-            // };
+                cout <<"Enter REVERSAL_TS, countTS: "<<countOL<<endl;
+
+                return countOL;
+            };
+
+			void REVERSAL_TS(){
+				int countTS = this->countTS();
+
+                cout <<"Enter REVERSAL_TS, countTS: "<<countTS<<endl;
+
+				if(countTS <= 1) return;
+                
+                string namePC = this->curr->name;
+                cout << "Previous curr name: "<<namePC<<endl;
+
+				customer* TSFirst = this->curr;
+				customer* TSLast = this->curr->next;
+				while(TSFirst->energy < 0) TSFirst = TSFirst->prev;
+				while(TSLast->energy < 0) TSLast = TSLast->next;
+
+				while(TSFirst != TSLast){
+						string name = TSFirst->name;
+						int energy = TSFirst->energy;
+						TSFirst->name = TSLast->name;
+						TSFirst->energy = TSLast->energy;
+						TSLast->name = name;
+						TSLast->energy = energy;
+                        TSFirst = TSFirst->prev;
+						while(TSFirst->energy < 0) TSFirst = TSFirst->prev;
+						if(TSFirst == TSLast) break;
+                        TSLast = TSLast->next;
+						while(TSLast->energy < 0) TSLast = TSLast->next;
+					}
+
+                /* Tim lai vi tri curr*/
+                while(curr->name != namePC) curr = curr->next;
+
+				cout << "end reversal thuat su, check!"<<endl;
+				this->LPRINT(9);
+			};
+
+            void REVERSAL_OL(){
+                int countOL = this->countOL();
+                string nameOP = this->curr->name;
+
+				if(countOL <= 1) return;
+
+				customer* OLFirst = this->curr;
+				customer* OLLast = this->curr->next;
+				while(OLFirst->energy > 0) OLFirst = OLFirst->prev;
+				while(OLLast->energy > 0) OLLast = OLLast->next;
+
+				while(OLFirst != OLLast){
+						string name = OLFirst->name;
+						int energy = OLFirst->energy;
+						OLFirst->name = OLLast->name;
+						OLFirst->energy = OLLast->energy;
+						OLLast->name = name;
+						OLLast->energy = energy;
+                        OLFirst = OLFirst->prev;
+						while(OLFirst->energy > 0) OLFirst = OLFirst->prev;
+						if(OLFirst == OLLast) break;
+                        OLLast = OLLast->next;
+						while(OLLast->energy > 0) OLLast = OLLast->next;
+					}
+				cout << "end reversal oan linh, check!"<<endl;
+                /* Update the curr to previous value */
+                while(curr->name != nameOP) curr = curr->next;
+
+				this->LPRINT(9);
+            };
     
-            // void LL_UNLIMITED(){
-            //     CDLL* chuoi = new CDLL();
-            //     if(this->count < 4) return;
-
-            //     customer* start = this->curr;
-            //     customer* end = start;
-            //     customer* Fstart = start;
-            //     customer* Fend = nullptr;
-            //     int min, sum = 0; 
-
-            //     for(int i=0; i< this->count-4; i++){
-            //         sum = 0;
-            //         end = start;
-            //         for(int j=0; j<4; j++){
-            //             sum +=  end->energy;
-            //             end = end->next;
-            //         }
-            //         if(i == 0 ) min = sum;
-
-            //         while(end != start){
-            //             sum += end->energy;
-            //             if(sum <= min){
-            //                 Fstart = start;
-            //                 Fend = end;
-            //                 min = sum;
-            //             }
-            //             end = end->next;
-            //         }
-            //         start = start->next;
-            //     }
-
-            //     while(Fstart != Fend){
-            //         chuoi->ADD_RED(Fstart->name, Fstart->energy);
-            //         Fstart = Fstart->next;
-            //     }
-
-            //     customer* temp = chuoi->head;
-            //     int MINCUS = temp->energy;
-            //     do {
-            //         if(temp->energy < MINCUS) chuoi->curr = temp;
-            //         temp = temp->next;
-            //     }
-            //     while(temp != chuoi->head);
-            //     chuoi->LPRINT(2);
-            // }
+            
     };
 
     public:
@@ -392,7 +409,6 @@ class imp_res : public Restaurant
                 }
             };
 
-            /* WAITING LIST IS IMPLEMETED AS SINGLY LINKED LIST */
             void WADD_RED(string name, int energy){
                 cout << "* Adding to waiting list "<<endl;
                 if(this->countWait < MAXSIZE){
@@ -409,7 +425,7 @@ class imp_res : public Restaurant
                     }
                 else if(this->countWait == 1){
                     wcus = new customer(name, energy, this->first, nullptr );
-                    this->last->next = wcus;
+                    this->first->next = wcus;
                     this->last = wcus;
                     this->countWait = 2;
                     }
@@ -445,6 +461,39 @@ class imp_res : public Restaurant
                     this->countWait--;
                 }
             };
+
+            void REMOVE(string name){
+                if(this->countWait == 0) return;
+                customer* del = this->first;
+                while(del->name != name) del = del->next;
+                if(del == this->first){
+                    if(this->countWait == 1){
+                        this->first = nullptr;
+                        this->last = nullptr;
+                        delete this->first;
+                        delete this->last;
+                    }
+                    else{
+                        this->first = this->first->next;
+                        this->first->prev = nullptr;
+                        del->next = nullptr;
+                        delete del;
+                    }
+                }
+                else if(del == this->last){
+                    this->last = this->last->prev;
+                    this->last->next = nullptr;
+                    del->prev = nullptr;
+                    delete del;
+                }
+                else{
+                    customer* preDel = del->prev;
+                    preDel->next = del->next;
+                    del->next->prev = preDel;
+                    delete del;
+                }
+                this->countWait--;
+            }
     };
 
     public:
@@ -513,18 +562,137 @@ void imp_res::PURPLE(){
         
 void imp_res::REVERSAL(){
     cout << "reversal" << endl;
-    // LL->REVERSAL_TS();
-    // LL->REVERSAL_OL();
+    LL->REVERSAL_TS();
+    LL->REVERSAL_OL();
 }
 
 void imp_res::UNLIMITED_VOID(){
     cout << "unlimited_void" << endl;
-    // LL->LL_UNLIMITED();
+    if(LL->count < 4) return;
+
+    customer* start = LL->curr;
+    customer* end = start;
+    int MIN, sum, MAXLEN, len;
+    customer* Fstart;
+    customer* Fend;
+    do{
+        sum = 0;
+        for(int i=0; i < 4; i++){
+            sum += end->energy;
+            end = end->next;
+        }
+        len  = 4;
+
+        if(start == LL->curr){
+            MIN = sum;
+            MAXLEN = len;
+        }
+        
+        if(sum <= MIN && len >= MAXLEN){
+            MIN = sum;
+            MAXLEN = len;
+            Fstart = start;
+            Fend = end;
+        }
+
+        while(end != start){
+            sum += end->energy;
+            len++;
+            if(sum <= MIN && len >= MAXLEN){
+                MIN = sum;
+                MAXLEN = len;
+                Fstart = start;
+                Fend = end;
+            }
+            end = end->next;
+        }
+
+        start = start->next;
+        end = start;
+    }
+    while (start != LL->curr);
+
+    CDLL* chuoi = new CDLL();
+    customer* temp = Fstart;
+    while(temp != Fend){
+        chuoi->ADD(temp->name, temp->energy);
+        temp = temp->next;
+    }
+    chuoi->ADD(Fend->name, Fend->energy);
+
+    /* UPDATE THE CURR OF CDLL chuoi SO THAT PRINT FROM THE SMALLEST ENERGY WHICH IS FIRST FOUND */
+    customer* minCus = chuoi->head;
+    int minEn = minCus->energy;
+    chuoi->curr = minCus;
+    do{
+        if(minCus->energy < minEn) {
+            minEn = minCus->energy;
+            chuoi->curr = minCus;
+        }
+        minCus = minCus->next;
+    }
+    while(minCus != chuoi->head);
+
+    chuoi->LPRINT(2);
+
 }
 
 void imp_res::DOMAIN_EXPANSION(){
     cout << "domain_expansion" << endl;
-    
+    int energyTS = 0, energyOL = 0;
+    customer* temp = LL->curr;
+
+    if(LL->count < 1) return;
+
+    do{
+        if(temp->energy > 0) energyTS += temp->energy;
+        else energyOL += temp->energy;
+        temp = temp->next;
+    }
+    while(temp != LL->curr);
+
+    /* REMOVE ALL OAN LINH*/
+    if(energyTS >= abs(energyOL) ){
+        customer* del = TimeList->last;
+        cout<<"check timelist: "<<endl;
+        TimeList->WPRINT();
+        while(del){
+            while(del->energy > 0 && del != TimeList->first) {
+                del->print();
+                del = del->prev;
+                }
+            if(del->energy > 0 ){
+                if(TimeList->first->energy > 0) break;
+                else del = TimeList->first;
+            }
+            string delname = del->name;
+            del->print();
+            if(WL->WEXIST(delname)) WL->REMOVE(delname);
+            else if(LL->LEXIST(delname)) LL->REMOVE_BLUE(delname);
+            del = del->prev;
+            TimeList->REMOVE(delname);
+        }
+    }
+    /*REMOVER ALL THUAT SU */
+    else{
+        customer* del = TimeList->last;
+        while(del){
+            while(del->energy < 0 && del) del = del->prev;
+            if(del == nullptr) break;
+            string delname = del->name;
+            del->print();
+            if(WL->WEXIST(delname)) WL->REMOVE(delname);
+            else if(LL->LEXIST(delname)) LL->REMOVE_BLUE(delname);
+            TimeList->REMOVE(delname);
+            del = del->prev;
+        }
+    }
+
+    /* ARRAGE CUSTOMERS IN WAITING LIST TO TABLES IN RED METHOD */
+    while(LL->count < MAXSIZE && WL->countWait > 0){
+        LL->ADD_RED(WL->first->name, WL->first->energy);
+        WL->REMOVE();
+    }
 }
 
 void imp_res::LIGHT(int num){
